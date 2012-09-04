@@ -1,0 +1,68 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="MapExplorer.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:src="clr-namespace:MapExplorer" 
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+
+    <phone:PhoneApplicationPage.Resources>
+        <src:MapCartographicModeToIndexConverter x:Key="Converter1"/>
+        <src:MapColorModeToBooleanConverter x:Key="Converter2"/>
+    </phone:PhoneApplicationPage.Resources>
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock x:Name="ApplicationTitle" Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock x:Name="PageTitle" Text="{Binding Path=LocalizedResources.SettingsPageTitle, Source={StaticResource LocalizedStrings}}" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <StackPanel>
+                <Grid>
+                    <Grid.Resources>
+                        <src:CartographicModes x:Key="cartographicModes"/>
+                    </Grid.Resources>
+                    <ListBox x:Name="CartographicModesList" ItemsSource="{StaticResource cartographicModes}" Margin="0,5,0,10" 
+                        DisplayMemberPath="ModeName" SelectedIndex="{Binding MapCartographicMode, Mode=TwoWay, Converter={StaticResource Converter1}}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Grid>
+        
+                <StackPanel>
+                    <!-- Enter additional settings here -->
+                    <CheckBox x:Name="ColorModeCheckBox" Content="Use dark color mode" IsChecked="{Binding MapColorMode, Mode=TwoWay, Converter={StaticResource Converter2}}" HorizontalAlignment="Left" Width="456"/>
+                    <CheckBox x:Name="LandmarksCheckbox" Content="Show landmarks" IsChecked="{Binding MapLandmarksEnabled, Mode=TwoWay}" HorizontalAlignment="Left" Width="456"/>
+                    <CheckBox x:Name="PedestrianCheckbox" Content="Show pedestrian features" IsChecked="{Binding MapPedestrianFeaturesEnabled, Mode=TwoWay}" HorizontalAlignment="Left" Width="456"/>
+                    <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Zoom level:" Width="456"/>
+                    <Slider Minimum="1" Maximum="20" Value="{Binding MapZoomLevel, Mode=TwoWay}"/>
+                    <CheckBox x:Name="RouteCheckbox" Content="Show Route" IsChecked="{Binding RouteEnabled, Mode=TwoWay}" HorizontalAlignment="Left" Width="456"/>
+                    <CheckBox x:Name="DirectionsCheckbox" Content="Show Directions" IsChecked="{Binding DirectionsEnabled, Mode=TwoWay}" HorizontalAlignment="Left" Width="456"/>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+
+</phone:PhoneApplicationPage>
