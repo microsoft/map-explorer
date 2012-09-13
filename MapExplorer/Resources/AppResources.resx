@@ -128,9 +128,6 @@
   <data name="ApplicationTitle" xml:space="preserve">
     <value>MAP EXPLORER</value>
   </data>
-  <data name="AppBarButtonText" xml:space="preserve">
-    <value>add</value>
-  </data>
   <data name="AppBarMenuItemText" xml:space="preserve">
     <value>Menu Item</value>
   </data>
@@ -139,5 +136,71 @@
   </data>
   <data name="SettingsPageTitle" xml:space="preserve">
     <value>settings</value>
+  </data>
+  <data name="LocateMeMenuButtonText" xml:space="preserve">
+    <value>locate me</value>
+  </data>
+  <data name="ColorModeDarkMenuItemText" xml:space="preserve">
+    <value>dark color mode</value>
+  </data>
+  <data name="ColorModeLightMenuItemText" xml:space="preserve">
+    <value>light color mode</value>
+  </data>
+  <data name="LandmarksOffMenuItemText" xml:space="preserve">
+    <value>landmarks off</value>
+  </data>
+  <data name="LandmarksOnMenuItemText" xml:space="preserve">
+    <value>landmarks on</value>
+  </data>
+  <data name="PedestrianFeaturesOffMenuItemText" xml:space="preserve">
+    <value>pedestrian features off</value>
+  </data>
+  <data name="PedestrianFeaturesOnMenuItemText" xml:space="preserve">
+    <value>pedestrian features on</value>
+  </data>
+  <data name="SearchMenuButtonText" xml:space="preserve">
+    <value>search</value>
+  </data>
+  <data name="SettingsMenuButtonText" xml:space="preserve">
+    <value>settings</value>
+  </data>
+  <data name="AboutPageTitle" xml:space="preserve">
+    <value>about</value>
+  </data>
+  <data name="CalculatingRouteProgressText" xml:space="preserve">
+    <value>calculating route...</value>
+  </data>
+  <data name="GettingLocationProgressText" xml:space="preserve">
+    <value>getting location...</value>
+  </data>
+  <data name="SearchingProgressText" xml:space="preserve">
+    <value>searching...</value>
+  </data>
+  <data name="AboutPageCopyrightText" xml:space="preserve">
+    <value>Developed and published by Nokia. All rights reserved.</value>
+  </data>
+  <data name="AboutPageDescriptionText" xml:space="preserve">
+    <value>Map Explorer application is a Nokia Developer example demonstrating the use of the map component of Windows Phone 8.</value>
+  </data>
+  <data name="AboutPageDeveloperUrl" xml:space="preserve">
+    <value>http://projects.developer.nokia.com/mapexplorer</value>
+  </data>
+  <data name="AboutPageLearnMoreText" xml:space="preserve">
+    <value>Learn more at </value>
+  </data>
+  <data name="AboutPageVersionText" xml:space="preserve">
+    <value>Version: </value>
+  </data>
+  <data name="DirectionsOffMenuItemText" xml:space="preserve">
+    <value>directions off</value>
+  </data>
+  <data name="DirectionsOnMenuItemText" xml:space="preserve">
+    <value>directions on</value>
+  </data>
+  <data name="AboutMenuItemText" xml:space="preserve">
+    <value>about</value>
+  </data>
+  <data name="RouteMenuButtonText" xml:space="preserve">
+    <value>route</value>
   </data>
 </root>

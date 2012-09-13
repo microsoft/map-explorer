@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{4b41883b-a376-492b-8d41-5f8e0089ef47}" Title="MapExplorer" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="MapExplorer author" Description="Sample description" Publisher="MapExplorer" PublisherID="{73a7bfc3-acbc-4b07-9245-82631fa85e7e}">
+  <App xmlns="" ProductID="{4b41883b-a376-492b-8d41-5f8e0089ef47}" Title="Map Explorer" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="MapExplorer author" Description="Sample description" Publisher="MapExplorer" PublisherID="{73a7bfc3-acbc-4b07-9245-82631fa85e7e}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -18,26 +18,24 @@
     <Tokens>
       <PrimaryToken TokenID="MapExplorerToken" TaskName="_default">
         <TemplateFlip>
-          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileSmall.png</SmallImageURI>
+          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\Tile_map_explorer_159x159.png</SmallImageURI>
           <Count>0</Count>
-          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileMedium.png</BackgroundImageURI>
-          <Title>MapExplorer</Title>
+          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\Tile_map_explorer_336x336.png</BackgroundImageURI>
+          <Title>Map Explorer</Title>
           <BackContent>
           </BackContent>
           <BackBackgroundImageURI>
           </BackBackgroundImageURI>
           <BackTitle>
           </BackTitle>
-          <LargeBackgroundImageURI>
-          </LargeBackgroundImageURI>
+          <LargeBackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\Tile_map_explorer_691x336.png</LargeBackgroundImageURI>
           <LargeBackContent>
           </LargeBackContent>
           <LargeBackBackgroundImageURI>
           </LargeBackBackgroundImageURI>
           <DeviceLockImageURI>
           </DeviceLockImageURI>
-          <HasLarge>
-          </HasLarge>
+          <HasLarge>True</HasLarge>
         </TemplateFlip>
       </PrimaryToken>
     </Tokens>

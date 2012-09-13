@@ -61,11 +61,65 @@ namespace MapExplorer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to add.
+        ///   Looks up a localized string similar to about.
         /// </summary>
-        public static string AppBarButtonText {
+        public static string AboutMenuItemText {
             get {
-                return ResourceManager.GetString("AppBarButtonText", resourceCulture);
+                return ResourceManager.GetString("AboutMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Developed and published by Nokia. All rights reserved..
+        /// </summary>
+        public static string AboutPageCopyrightText {
+            get {
+                return ResourceManager.GetString("AboutPageCopyrightText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Explorer application is a Nokia Developer example demonstrating the use of the map component of Windows Phone 8..
+        /// </summary>
+        public static string AboutPageDescriptionText {
+            get {
+                return ResourceManager.GetString("AboutPageDescriptionText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://projects.developer.nokia.com/mapexplorer.
+        /// </summary>
+        public static string AboutPageDeveloperUrl {
+            get {
+                return ResourceManager.GetString("AboutPageDeveloperUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Learn more at .
+        /// </summary>
+        public static string AboutPageLearnMoreText {
+            get {
+                return ResourceManager.GetString("AboutPageLearnMoreText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to about.
+        /// </summary>
+        public static string AboutPageTitle {
+            get {
+                return ResourceManager.GetString("AboutPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version: .
+        /// </summary>
+        public static string AboutPageVersionText {
+            get {
+                return ResourceManager.GetString("AboutPageVersionText", resourceCulture);
             }
         }
         
@@ -88,11 +142,110 @@ namespace MapExplorer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to calculating route....
+        /// </summary>
+        public static string CalculatingRouteProgressText {
+            get {
+                return ResourceManager.GetString("CalculatingRouteProgressText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to dark color mode.
+        /// </summary>
+        public static string ColorModeDarkMenuItemText {
+            get {
+                return ResourceManager.GetString("ColorModeDarkMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to light color mode.
+        /// </summary>
+        public static string ColorModeLightMenuItemText {
+            get {
+                return ResourceManager.GetString("ColorModeLightMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to directions off.
+        /// </summary>
+        public static string DirectionsOffMenuItemText {
+            get {
+                return ResourceManager.GetString("DirectionsOffMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to directions on.
+        /// </summary>
+        public static string DirectionsOnMenuItemText {
+            get {
+                return ResourceManager.GetString("DirectionsOnMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to getting location....
+        /// </summary>
+        public static string GettingLocationProgressText {
+            get {
+                return ResourceManager.GetString("GettingLocationProgressText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to landmarks off.
+        /// </summary>
+        public static string LandmarksOffMenuItemText {
+            get {
+                return ResourceManager.GetString("LandmarksOffMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to landmarks on.
+        /// </summary>
+        public static string LandmarksOnMenuItemText {
+            get {
+                return ResourceManager.GetString("LandmarksOnMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to locate me.
+        /// </summary>
+        public static string LocateMeMenuButtonText {
+            get {
+                return ResourceManager.GetString("LocateMeMenuButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to your location.
         /// </summary>
         public static string MainPageTitle {
             get {
                 return ResourceManager.GetString("MainPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to pedestrian features off.
+        /// </summary>
+        public static string PedestrianFeaturesOffMenuItemText {
+            get {
+                return ResourceManager.GetString("PedestrianFeaturesOffMenuItemText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to pedestrian features on.
+        /// </summary>
+        public static string PedestrianFeaturesOnMenuItemText {
+            get {
+                return ResourceManager.GetString("PedestrianFeaturesOnMenuItemText", resourceCulture);
             }
         }
         
@@ -111,6 +264,42 @@ namespace MapExplorer.Resources {
         public static string ResourceLanguage {
             get {
                 return ResourceManager.GetString("ResourceLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to route.
+        /// </summary>
+        public static string RouteMenuButtonText {
+            get {
+                return ResourceManager.GetString("RouteMenuButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to searching....
+        /// </summary>
+        public static string SearchingProgressText {
+            get {
+                return ResourceManager.GetString("SearchingProgressText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to search.
+        /// </summary>
+        public static string SearchMenuButtonText {
+            get {
+                return ResourceManager.GetString("SearchMenuButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to settings.
+        /// </summary>
+        public static string SettingsMenuButtonText {
+            get {
+                return ResourceManager.GetString("SettingsMenuButtonText", resourceCulture);
             }
         }
         

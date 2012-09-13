@@ -11,6 +11,7 @@ using System.Device.Location;
 using Microsoft.Phone.Maps.Controls;
 using System.Windows;
 using System.Windows.Data;
+using Microsoft.Phone.Maps.Services;
 
 namespace MapExplorer
 {
@@ -28,7 +29,10 @@ namespace MapExplorer
             _mapColorMode = MapColorMode.Light;
             _mapLandmarksEnabled = false;
             _mapPedestrianFeaturesEnabled = false;
-            _mapZoomLevel = 1;
+            _mapZoomLevel = 2;
+            _mapPitch = 0;
+            _mapHeading = 0;
+            _mapTravelMode = TravelMode.Driving;
         }
 
         /// <summary>
@@ -51,6 +55,7 @@ namespace MapExplorer
                 {
                     _mapCartographicMode = value;
                     NotifyPropertyChanged("MapCartographicMode");
+                    NotifyPropertyChanged("AllowNonAerialSettingsChange");
                 }
             }
         }
@@ -152,6 +157,54 @@ namespace MapExplorer
         }
 
         /// <summary>
+        /// Member variable for map pitch property
+        /// </summary>
+        private int _mapPitch;
+
+        /// <summary>
+        /// Property for map pitch
+        /// </summary>
+        public int MapPitch
+        {
+            get
+            {
+                return _mapPitch;
+            }
+            set
+            {
+                if (_mapPitch != value)
+                {
+                    _mapPitch = value;
+                    NotifyPropertyChanged("MapPitch");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Member variable for map heading property
+        /// </summary>
+        private double _mapHeading;
+
+        /// <summary>
+        /// Property for map heading
+        /// </summary>
+        public double MapHeading
+        {
+            get
+            {
+                return _mapHeading;
+            }
+            set
+            {
+                if (_mapHeading != value)
+                {
+                    _mapHeading = value;
+                    NotifyPropertyChanged("MapHeading");
+                }
+            }
+        }
+
+        /// <summary>
         /// Member variable for directions property
         /// </summary>
         private bool _directionsEnabled;
@@ -198,6 +251,51 @@ namespace MapExplorer
                 }
             }
         }
+
+        /// <summary>
+        /// Member variable for travel mode property
+        /// </summary>
+        private TravelMode _mapTravelMode;
+
+        /// <summary>
+        /// Property for map travel mode
+        /// </summary>
+        public TravelMode MapTravelMode
+        {
+            get
+            {
+                return _mapTravelMode;
+            }
+            set
+            {
+                if (_mapTravelMode != value)
+                {
+                    _mapTravelMode = value;
+                    NotifyPropertyChanged("MapTravelMode");
+                    NotifyPropertyChanged("RouteByDriving");
+                    NotifyPropertyChanged("RouteByWalking");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Properties for map travel modes
+        /// </summary>
+        public bool RouteByDriving
+        {
+            get
+            {
+                return (_mapTravelMode == TravelMode.Driving);
+            }
+        }
+        public bool RouteByWalking
+        {
+            get
+            {
+                return (_mapTravelMode == TravelMode.Walking);
+            }
+        }
+
         /// <summary>
         /// Implementation of PropertyChanged event of INotifyPropertyChanged
         /// </summary>
@@ -310,6 +408,58 @@ namespace MapExplorer
             if (flag)
             {
                 mode = MapColorMode.Dark;
+            }
+            // Return the value to pass to the target.
+            return mode;
+        }
+
+        #endregion
+    }
+
+    // Custom class implements the IValueConverter interface.
+    public class MapTravelModeToIndexConverter : IValueConverter
+    {
+
+        #region IValueConverter Members
+
+        // Define the Convert method to change a CartographicMode object to an index.
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            // value is the data from the source object.
+            int mode = (int)value;
+            int index = 0;
+            switch (mode)
+            {
+                case (int)TravelMode.Driving:
+                    index = 0;
+                    break;
+                case (int)TravelMode.Walking:
+                    index = 1;
+                    break;
+                default:
+                    index = 0;
+                    break;
+            }
+            // Return the value to pass to the target.
+            return index;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            // value is the data from the source object.
+            int index = (int)value;
+            TravelMode mode;
+            switch (index)
+            {
+                case 0:
+                    mode = TravelMode.Driving;
+                    break;
+                case 1:
+                    mode = TravelMode.Walking;
+                    break;
+                default:
+                    mode = TravelMode.Driving;
+                    break;
             }
             // Return the value to pass to the target.
             return mode;

@@ -20,17 +20,26 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using System.Windows.Media.Imaging;
 using Microsoft.Phone.Maps.Services;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 
 namespace MapExplorer
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        ApplicationBarMenuItem AppBarColorModeMenuItem = null;
+        ApplicationBarMenuItem AppBarLandmarksMenuItem = null;
+        ApplicationBarMenuItem AppBarPedestrianFeaturesMenuItem = null;
+        ApplicationBarMenuItem AppBarDirectionsMenuItem = null;
+        ApplicationBarMenuItem AppBarAboutMenuItem = null;
+
+        ProgressIndicator prog = null;
 
         Geoposition MyGeoPosition = null;
         List<GeoCoordinate> MyCoordinates = new List<GeoCoordinate>();
 
-//        MapRoute MyMapRoute = null;
+        MapRoute MyMapRoute = null;
 
         RouteQuery MyQuery = null;
         GeocodeQuery Mygeocodequery = null;
@@ -40,35 +49,11 @@ namespace MapExplorer
         {
             InitializeComponent();
             DataContext = App.Settings;
-            GetCoordinates();
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            MyMap.LandmarksEnabled = App.Settings.MapLandmarksEnabled;
-            MyMap.PedestrianFeaturesEnabled = App.Settings.MapPedestrianFeaturesEnabled;
-
-            if (App.Settings.DirectionsEnabled)
-            {
-                DirectionsTitleRowDefinition.Height = GridLength.Auto;
-                DirectionsRowDefinition.Height = new GridLength(1, GridUnitType.Star);
-            }
-            else
-            {
-                DirectionsTitleRowDefinition.Height = new GridLength(0);
-                DirectionsRowDefinition.Height = new GridLength(0);
-            }
-
-//            if (App.Settings.RouteEnabled && MyMapRoute != null)
-//            {
-//                MyMap.AddRoute(MyMapRoute);
-//            }
-//            else if (MyMapRoute != null)
-//            {
-//                MyMap.RemoveRoute(MyMapRoute);
-//            }
 
             if (isNewInstance)
             {
@@ -78,18 +63,59 @@ namespace MapExplorer
             DrawMapMarkers();
         }
 
-        private void Search_Click(object sender, EventArgs e)
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (SearchTextBox.Text.Length > 0)
+            if (e.Key == Key.Enter)
             {
-                Mygeocodequery = new GeocodeQuery();
-                Mygeocodequery.SearchTerm = SearchTextBox.Text;
-                Mygeocodequery.GeoCoordinate = new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude);
+                if (SearchTextBox.Text.Length > 0)
+                {
+                    AppBarDirectionsMenuItem.IsEnabled = false;
+                    if (!App.Settings.RouteEnabled)
+                    {
+                        DirectionsTitleRowDefinition.Height = new GridLength(0);
+                        DirectionsRowDefinition.Height = new GridLength(0);
+                        if (MyMapRoute != null)
+                        {
+                            MyMap.RemoveRoute(MyMapRoute);
+                        }
+                        ShowProgress(AppResources.SearchingProgressText);
+                    }
+                    else
+                    {
+                        if (MyGeoPosition == null)
+                        {
+                            MessageBox.Show("Your current location not available");
+                            return;
+                        }
+                        else
+                        {
+                            ShowProgress(AppResources.CalculatingRouteProgressText);
+                        }
+                    }
 
-                Mygeocodequery.QueryCompleted += Mygeocodequery_QueryCompleted;
-                Mygeocodequery.QueryAsync();
+                    Mygeocodequery = new GeocodeQuery();
+                    Mygeocodequery.SearchTerm = SearchTextBox.Text;
+                    if (MyGeoPosition == null)
+                    {
+                        Mygeocodequery.GeoCoordinate = new GeoCoordinate(0, 0);
+                    }
+                    else
+                    {
+                        Mygeocodequery.GeoCoordinate = new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude);
+                    }
+
+                    Mygeocodequery.QueryCompleted += Mygeocodequery_QueryCompleted;
+                    Mygeocodequery.QueryAsync();
+                    this.Focus();
+                }
             }
         }
+
+        private void SearchTextBox_LostFocus(object sender, EventArgs e)
+        {
+            SearchTextBox.Visibility = Visibility.Collapsed;
+        }
+
 
         void Mygeocodequery_QueryCompleted(object sender, QueryCompletedEventArgs<IList<MapLocation>> e)
         {
@@ -98,26 +124,45 @@ namespace MapExplorer
                 if (e.Result.Count > 0)
                 {
                     MyCoordinates.Clear();
-                    MyCoordinates.Add(new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude));
-                    MyCoordinates.Add(e.Result[0].GeoCoordinate);
-
-                    // Create a route from current position to destination
-                    MyQuery = new RouteQuery();
-                    MyQuery.Waypoints = MyCoordinates;
-                    MyQuery.QueryCompleted += MyQuery_QueryCompleted;
-                    MyQuery.QueryAsync();
-                    Mygeocodequery.Dispose();
-
-                    if (!App.Settings.RouteEnabled)
+                    if (MyGeoPosition == null)
                     {
+                        MyCoordinates.Add(new GeoCoordinate(0, 0));
+                    }
+                    else
+                    {
+                        MyCoordinates.Add(new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude));
+                    }
+
+                    if (App.Settings.RouteEnabled)
+                    {
+                        // Route to first search result
+                        MyCoordinates.Add(e.Result[0].GeoCoordinate);
+
+                        // Create a route from current position to destination
+                        MyQuery = new RouteQuery();
+                        MyQuery.TravelMode = App.Settings.MapTravelMode;
+                        MyQuery.Waypoints = MyCoordinates;
+                        MyQuery.QueryCompleted += MyQuery_QueryCompleted;
+                        MyQuery.QueryAsync();
+                        // Mygeocodequery.Dispose();
+                    }
+                    else
+                    {
+                        for (int i = 0; i < e.Result.Count; i++)
+                        {
+                            MyCoordinates.Add(e.Result[i].GeoCoordinate);
+                        }
+
                         // Just center on the result if route is not wanted.
-                        MyMap.SetView(e.Result[0].GeoCoordinate, MyMap.ZoomLevel, MapAnimationKind.Parabolic);
+                        MyMap.SetView(e.Result[0].GeoCoordinate, 10, MapAnimationKind.Parabolic);
+                        HideProgress();
                     }
 
                     DrawMapMarkers();
                 }
                 else
                 {
+                    HideProgress();
                     MessageBox.Show("No match found. Narrow your search e.g. \"Seattle Wa\"");
                 }
             }
@@ -127,18 +172,16 @@ namespace MapExplorer
         {
             if (e.Error == null)
             {
-//                if (MyMapRoute != null)
-//                {
-//                    MyMap.RemoveRoute(MyMapRoute);
-//                }
+                if (MyMapRoute != null)
+                {
+                    MyMap.RemoveRoute(MyMapRoute);
+                }
 
                 Route MyRoute = e.Result;
-                MapRoute MyMapRoute = new MapRoute(MyRoute);
+                MyMapRoute = new MapRoute(MyRoute);
 
-                if (App.Settings.RouteEnabled)
-                {
-                    MyMap.AddRoute(MyMapRoute);
-                }
+                AppBarDirectionsMenuItem.IsEnabled = true;
+                MyMap.AddRoute(MyMapRoute);
 
                 List<string> RouteList = new List<string>();
                 foreach (RouteLeg leg in MyRoute.Legs)
@@ -149,9 +192,9 @@ namespace MapExplorer
                     }
                 }
                 RouteLLS.ItemsSource = RouteList;
-
-                MyQuery.Dispose();
             }
+
+            HideProgress();
         }
 
         private void DrawMapMarker(GeoCoordinate coordinate, Color color)
@@ -185,23 +228,167 @@ namespace MapExplorer
                 DrawMapMarker(new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude), Colors.Red);
             }
 
-            // Draw marker for destination
-            if (MyCoordinates.Count > 1)
+            // Draw markers for destination
+            for (int i = 1; i < MyCoordinates.Count; i++)
             {
-                DrawMapMarker(MyCoordinates[1], Colors.Blue);
+                DrawMapMarker(MyCoordinates[i], Colors.Blue);
             }
         }
 
-        private void Settings_Click(object sender, EventArgs e)
+        private void Search_Click(object sender, EventArgs e)
         {
-            // Clear map layers to avoid map markers briefly shown on top of settings page 
+            App.Settings.RouteEnabled = false;
+            SearchTextBox.Visibility = Visibility.Visible;
+            SearchTextBox.Focus();
+        }
+
+        private void Route_Click(object sender, EventArgs e)
+        {
+            App.Settings.RouteEnabled = true;
+            SearchTextBox.Visibility = Visibility.Visible;
+            SearchTextBox.Focus();
+        }
+
+        private void LocateMe_Click(object sender, EventArgs e)
+        {
+            if (isLocationAllowed)
+            {
+                GetCoordinates();
+            }
+            else
+            {
+                LocationPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void About_Click(object sender, EventArgs e)
+        {
+            // Clear map layers to avoid map markers briefly shown on top of about page 
             MyMap.Layers.Clear();
-            NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/AboutPage.xaml", UriKind.Relative));
+        }
+
+        private void ColorMode_Click(object sender, EventArgs e)
+        {
+            if (App.Settings.MapColorMode == MapColorMode.Dark)
+            {
+                App.Settings.MapColorMode = MapColorMode.Light;
+                AppBarColorModeMenuItem.Text = AppResources.ColorModeDarkMenuItemText;
+            }
+            else
+            {
+                App.Settings.MapColorMode = MapColorMode.Dark;
+                AppBarColorModeMenuItem.Text = AppResources.ColorModeLightMenuItemText;
+            }
+        }
+
+        private void Landmarks_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapLandmarksEnabled = !App.Settings.MapLandmarksEnabled;
+            if (App.Settings.MapLandmarksEnabled)
+            {
+                AppBarLandmarksMenuItem.Text = AppResources.LandmarksOffMenuItemText;
+            }
+            else
+            {
+                AppBarLandmarksMenuItem.Text = AppResources.LandmarksOnMenuItemText;
+            }
+        }
+
+        private void PedestrianFeatures_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapPedestrianFeaturesEnabled = !App.Settings.MapPedestrianFeaturesEnabled;
+            if (App.Settings.MapPedestrianFeaturesEnabled)
+            {
+                AppBarPedestrianFeaturesMenuItem.Text = AppResources.PedestrianFeaturesOffMenuItemText;
+            }
+            else
+            {
+                AppBarPedestrianFeaturesMenuItem.Text = AppResources.PedestrianFeaturesOnMenuItemText;
+            }
+        }
+
+        private void Directions_Click(object sender, EventArgs e)
+        {
+            App.Settings.DirectionsEnabled = !App.Settings.DirectionsEnabled;
+            if (App.Settings.DirectionsEnabled)
+            {
+                AppBarDirectionsMenuItem.Text = AppResources.DirectionsOffMenuItemText;
+                DirectionsTitleRowDefinition.Height = GridLength.Auto;
+                DirectionsRowDefinition.Height = new GridLength(2, GridUnitType.Star);
+                ModePanel.Visibility = Visibility.Collapsed;
+                HeadingPanel.Visibility = Visibility.Collapsed;
+                PitchPanel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                AppBarDirectionsMenuItem.Text = AppResources.DirectionsOnMenuItemText;
+                DirectionsTitleRowDefinition.Height = new GridLength(0);
+                DirectionsRowDefinition.Height = new GridLength(0);
+                ModePanel.Visibility = Visibility.Visible;
+                HeadingPanel.Visibility = Visibility.Visible;
+                PitchPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void AllowLocation_Click(object sender, EventArgs e)
+        {
+            LocationPanel.Visibility = Visibility.Collapsed;
+            isLocationAllowed = true;
+            BuildApplicationBar();
+            GetCoordinates();
+        }
+
+        private void CancelLocation_Click(object sender, EventArgs e)
+        {
+            LocationPanel.Visibility = Visibility.Collapsed;
+            BuildApplicationBar();
+        }
+
+        private void RoadButton_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapCartographicMode = MapCartographicMode.Road;
+        }
+        private void AerialButton_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapCartographicMode = MapCartographicMode.Aerial;
+        }
+        private void HybridButton_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapCartographicMode = MapCartographicMode.Hybrid;
+        }
+        private void TerrainButton_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapCartographicMode = MapCartographicMode.Terrain;
+        }
+
+        private void DriveButton_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapTravelMode = TravelMode.Driving;
+            ShowProgress(AppResources.CalculatingRouteProgressText);
+            Mygeocodequery.QueryAsync();
+        }
+        private void WalkButton_Click(object sender, EventArgs e)
+        {
+            App.Settings.MapTravelMode = TravelMode.Walking;
+            ShowProgress(AppResources.CalculatingRouteProgressText);
+            Mygeocodequery.QueryAsync();
+        }
+
+        private void HeadingValueChanged(object sender, EventArgs e)
+        {
+            if (HeadingSlider != null)
+            {
+                double value = HeadingSlider.Value;
+                if (value > 360) value -= 360;
+                App.Settings.MapHeading = value;
+            }
         }
 
         private async void GetCoordinates()
         {
             //Getting Phone's current location
+            ShowProgress(AppResources.GettingLocationProgressText);
             Geolocator MyGeolocator = new Geolocator();
             MyGeolocator.DesiredAccuracyInMeters = 5;
             try
@@ -219,11 +406,85 @@ namespace MapExplorer
             }
             MyMap.SetView(new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude), 10, MapAnimationKind.Parabolic);
             DrawMapMarkers();
+            HideProgress();
+        }
+
+        // Helper function to build a localized ApplicationBar
+        private void BuildApplicationBar()
+        {
+            // Set the page's ApplicationBar to a new instance of ApplicationBar.    
+            ApplicationBar = new ApplicationBar();
+
+            ApplicationBar.Mode = ApplicationBarMode.Default;
+            ApplicationBar.Opacity = 1.0;
+            ApplicationBar.IsVisible = true;
+            ApplicationBar.IsMenuEnabled = true;
+
+            // Create a new buttons and set the text values to the localized strings from AppResources.
+            ApplicationBarIconButton appBarSearchButton = new ApplicationBarIconButton(new Uri("/Assets/appbar.feature.search.rest.png", UriKind.Relative));
+            appBarSearchButton.Text = AppResources.SearchMenuButtonText;
+            appBarSearchButton.Click += new EventHandler(Search_Click);
+            ApplicationBar.Buttons.Add(appBarSearchButton);
+
+            ApplicationBarIconButton appBarRouteButton = new ApplicationBarIconButton(new Uri("/Assets/appbar.show.route.png", UriKind.Relative));
+            appBarRouteButton.Text = AppResources.RouteMenuButtonText;
+            appBarRouteButton.Click += new EventHandler(Route_Click);
+            ApplicationBar.Buttons.Add(appBarRouteButton);
+
+            ApplicationBarIconButton appBarLocateMeButton = new ApplicationBarIconButton(new Uri("/Assets/appbar.locate.me.png", UriKind.Relative));
+            appBarLocateMeButton.Text = AppResources.LocateMeMenuButtonText;
+            appBarLocateMeButton.Click += new EventHandler(LocateMe_Click);
+            ApplicationBar.Buttons.Add(appBarLocateMeButton);
+
+            // Create a new menu items with the localized strings from AppResources.
+            AppBarColorModeMenuItem = new ApplicationBarMenuItem(AppResources.ColorModeDarkMenuItemText);
+            AppBarColorModeMenuItem.Click += new EventHandler(ColorMode_Click);
+            ApplicationBar.MenuItems.Add(AppBarColorModeMenuItem);
+
+            AppBarLandmarksMenuItem = new ApplicationBarMenuItem(AppResources.LandmarksOnMenuItemText);
+            AppBarLandmarksMenuItem.Click += new EventHandler(Landmarks_Click);
+            ApplicationBar.MenuItems.Add(AppBarLandmarksMenuItem);
+
+            AppBarPedestrianFeaturesMenuItem = new ApplicationBarMenuItem(AppResources.PedestrianFeaturesOnMenuItemText);
+            AppBarPedestrianFeaturesMenuItem.Click += new EventHandler(PedestrianFeatures_Click);
+            ApplicationBar.MenuItems.Add(AppBarPedestrianFeaturesMenuItem);
+
+            AppBarDirectionsMenuItem = new ApplicationBarMenuItem(AppResources.DirectionsOnMenuItemText);
+            AppBarDirectionsMenuItem.Click += new EventHandler(Directions_Click);
+            AppBarDirectionsMenuItem.IsEnabled = false;
+            ApplicationBar.MenuItems.Add(AppBarDirectionsMenuItem);
+
+            AppBarAboutMenuItem = new ApplicationBarMenuItem(AppResources.AboutMenuItemText);
+            AppBarAboutMenuItem.Click += new EventHandler(About_Click);
+            ApplicationBar.MenuItems.Add(AppBarAboutMenuItem);
+        }
+
+        void ShowProgress(String msg)
+        {
+            if (prog == null)
+            {
+                prog = new ProgressIndicator();
+                prog.IsIndeterminate = true;
+            }
+            prog.Text = msg;
+            prog.IsVisible = true;
+            SystemTray.SetProgressIndicator(this, prog);
+        }
+
+        void HideProgress()
+        {
+            prog.IsVisible = false;
+            SystemTray.SetProgressIndicator(this, prog);
         }
 
         /// <summary>
         /// True when this object instance has been just created, otherwise false
         /// </summary>
         private bool isNewInstance = true;
+
+        /// <summary>
+        /// True when access to user location is allowed, otherwise false
+        /// </summary>
+        private bool isLocationAllowed = false;
     }
 }
