@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MapExplorer.Resources;
+using System.Xml.Linq;
 
 namespace MapExplorer
 {
@@ -29,7 +30,7 @@ namespace MapExplorer
 
         private void UpdateVersionString()
         {
-            String appVersion = System.Reflection.Assembly.GetExecutingAssembly().FullName.Split('=')[1].Split(',')[0];
+            string appVersion = XDocument.Load("WMAppManifest.xml").Root.Element("App").Attribute("Version").Value;
             VersionText.Text = AppResources.AboutPageVersionText + appVersion;
         }
     }
