@@ -223,11 +223,38 @@ namespace MapExplorer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Location is disabled in phone settings.
+        /// </summary>
+        public static string LocationDisabledMessageBoxText {
+            get {
+                return ResourceManager.GetString("LocationDisabledMessageBoxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to your location.
         /// </summary>
         public static string MainPageTitle {
             get {
                 return ResourceManager.GetString("MainPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your current location not available.
+        /// </summary>
+        public static string NoCurrentLocationMessageBoxText {
+            get {
+                return ResourceManager.GetString("NoCurrentLocationMessageBoxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No match found. Narrow your search e.g. &quot;Seattle Wa&quot;.
+        /// </summary>
+        public static string NoMatchFoundMessageBoxText {
+            get {
+                return ResourceManager.GetString("NoMatchFoundMessageBoxText", resourceCulture);
             }
         }
         

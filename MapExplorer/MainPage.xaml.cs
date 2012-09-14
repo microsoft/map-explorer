@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * Copyright © 2012 Nokia Corporation. All rights reserved.
+ * Nokia and Nokia Connecting People are registered trademarks of Nokia Corporation. 
+ * Other product and company names mentioned herein may be trademarks
+ * or trade names of their respective owners. 
+ * See LICENSE.TXT for license information.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -41,8 +49,8 @@ namespace MapExplorer
 
         MapRoute MyMapRoute = null;
 
-        RouteQuery MyQuery = null;
-        GeocodeQuery Mygeocodequery = null;
+        RouteQuery MyRouteQuery = null;
+        GeocodeQuery MyGeocodeQuery = null;
 
         // Constructor
         public MainPage()
@@ -84,7 +92,7 @@ namespace MapExplorer
                     {
                         if (MyGeoPosition == null)
                         {
-                            MessageBox.Show("Your current location not available");
+                            MessageBox.Show(AppResources.NoCurrentLocationMessageBoxText);
                             return;
                         }
                         else
@@ -92,23 +100,27 @@ namespace MapExplorer
                             ShowProgress(AppResources.CalculatingRouteProgressText);
                         }
                     }
-
-                    Mygeocodequery = new GeocodeQuery();
-                    Mygeocodequery.SearchTerm = SearchTextBox.Text;
-                    if (MyGeoPosition == null)
-                    {
-                        Mygeocodequery.GeoCoordinate = new GeoCoordinate(0, 0);
-                    }
-                    else
-                    {
-                        Mygeocodequery.GeoCoordinate = new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude);
-                    }
-
-                    Mygeocodequery.QueryCompleted += Mygeocodequery_QueryCompleted;
-                    Mygeocodequery.QueryAsync();
+                    SearchForTerm(SearchTextBox.Text);
                     this.Focus();
                 }
             }
+        }
+
+        private void SearchForTerm(String searchTerm)
+        {
+            MyGeocodeQuery = new GeocodeQuery();
+            MyGeocodeQuery.SearchTerm = searchTerm;
+            if (MyGeoPosition == null)
+            {
+                MyGeocodeQuery.GeoCoordinate = new GeoCoordinate(0, 0);
+            }
+            else
+            {
+                MyGeocodeQuery.GeoCoordinate = new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude);
+            }
+
+            MyGeocodeQuery.QueryCompleted += MyGeocodeQuery_QueryCompleted;
+            MyGeocodeQuery.QueryAsync();
         }
 
         private void SearchTextBox_LostFocus(object sender, EventArgs e)
@@ -116,14 +128,15 @@ namespace MapExplorer
             SearchTextBox.Visibility = Visibility.Collapsed;
         }
 
-
-        void Mygeocodequery_QueryCompleted(object sender, QueryCompletedEventArgs<IList<MapLocation>> e)
+        void MyGeocodeQuery_QueryCompleted(object sender, QueryCompletedEventArgs<IList<MapLocation>> e)
         {
             if (e.Error == null)
             {
                 if (e.Result.Count > 0)
                 {
                     MyCoordinates.Clear();
+
+                    // Add my position to be the first in MyCoordinates
                     if (MyGeoPosition == null)
                     {
                         MyCoordinates.Add(new GeoCoordinate(0, 0));
@@ -139,15 +152,16 @@ namespace MapExplorer
                         MyCoordinates.Add(e.Result[0].GeoCoordinate);
 
                         // Create a route from current position to destination
-                        MyQuery = new RouteQuery();
-                        MyQuery.TravelMode = App.Settings.MapTravelMode;
-                        MyQuery.Waypoints = MyCoordinates;
-                        MyQuery.QueryCompleted += MyQuery_QueryCompleted;
-                        MyQuery.QueryAsync();
-                        // Mygeocodequery.Dispose();
+                        MyRouteQuery = new RouteQuery();
+                        MyRouteQuery.TravelMode = App.Settings.MapTravelMode;
+                        MyRouteQuery.Waypoints = MyCoordinates;
+                        MyRouteQuery.QueryCompleted += MyRouteQuery_QueryCompleted;
+                        MyRouteQuery.QueryAsync();
+                        // MyGeocodeQuery.Dispose();
                     }
                     else
                     {
+                        // Add all results to MyCoordinates for drawing the map markers
                         for (int i = 0; i < e.Result.Count; i++)
                         {
                             MyCoordinates.Add(e.Result[i].GeoCoordinate);
@@ -163,12 +177,12 @@ namespace MapExplorer
                 else
                 {
                     HideProgress();
-                    MessageBox.Show("No match found. Narrow your search e.g. \"Seattle Wa\"");
+                    MessageBox.Show(AppResources.NoMatchFoundMessageBoxText);
                 }
             }
         }
 
-        void MyQuery_QueryCompleted(object sender, QueryCompletedEventArgs<Route> e)
+        void MyRouteQuery_QueryCompleted(object sender, QueryCompletedEventArgs<Route> e)
         {
             if (e.Error == null)
             {
@@ -253,7 +267,7 @@ namespace MapExplorer
         {
             if (isLocationAllowed)
             {
-                GetCoordinates();
+                GetCurrentLocation();
             }
             else
             {
@@ -336,7 +350,7 @@ namespace MapExplorer
             LocationPanel.Visibility = Visibility.Collapsed;
             isLocationAllowed = true;
             BuildApplicationBar();
-            GetCoordinates();
+            GetCurrentLocation();
         }
 
         private void CancelLocation_Click(object sender, EventArgs e)
@@ -366,13 +380,13 @@ namespace MapExplorer
         {
             App.Settings.MapTravelMode = TravelMode.Driving;
             ShowProgress(AppResources.CalculatingRouteProgressText);
-            Mygeocodequery.QueryAsync();
+            MyGeocodeQuery.QueryAsync();
         }
         private void WalkButton_Click(object sender, EventArgs e)
         {
             App.Settings.MapTravelMode = TravelMode.Walking;
             ShowProgress(AppResources.CalculatingRouteProgressText);
-            Mygeocodequery.QueryAsync();
+            MyGeocodeQuery.QueryAsync();
         }
 
         private void HeadingValueChanged(object sender, EventArgs e)
@@ -385,28 +399,33 @@ namespace MapExplorer
             }
         }
 
-        private async void GetCoordinates()
+        // Helper function to get current location
+        private async void GetCurrentLocation()
         {
-            //Getting Phone's current location
             ShowProgress(AppResources.GettingLocationProgressText);
-            Geolocator MyGeolocator = new Geolocator();
-            MyGeolocator.DesiredAccuracyInMeters = 5;
+            Geolocator geolocator = new Geolocator();
+            geolocator.DesiredAccuracyInMeters = 10;
             try
             {
-                MyGeoPosition = await MyGeolocator.GetGeopositionAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(10));
+                MyGeoPosition = await geolocator.GetGeopositionAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(10));
+
+                Dispatcher.BeginInvoke(() =>
+                {
+                    GeoCoordinate myCoordinate = new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude);
+                    MyMap.SetView(myCoordinate, 10, MapAnimationKind.Parabolic);
+                    DrawMapMarkers();
+                    HideProgress();
+                });
             }
             catch (UnauthorizedAccessException)
             {
-                MessageBox.Show("Location is disabled in phone settings");
+                MessageBox.Show(AppResources.LocationDisabledMessageBoxText);
             }
             catch (Exception ex)
             {
                 // something else happened acquring the location
                 // ex.HResult can be read to know the specific error code but it is not recommended
             }
-            MyMap.SetView(new GeoCoordinate(MyGeoPosition.Coordinate.Latitude, MyGeoPosition.Coordinate.Longitude), 10, MapAnimationKind.Parabolic);
-            DrawMapMarkers();
-            HideProgress();
         }
 
         // Helper function to build a localized ApplicationBar
@@ -459,7 +478,8 @@ namespace MapExplorer
             ApplicationBar.MenuItems.Add(AppBarAboutMenuItem);
         }
 
-        void ShowProgress(String msg)
+        // Helper function to show progress indicator in system tray
+        private void ShowProgress(String msg)
         {
             if (prog == null)
             {
@@ -471,7 +491,8 @@ namespace MapExplorer
             SystemTray.SetProgressIndicator(this, prog);
         }
 
-        void HideProgress()
+        // Helper function to hide progress indicator in system tray
+        private void HideProgress()
         {
             prog.IsVisible = false;
             SystemTray.SetProgressIndicator(this, prog);

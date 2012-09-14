@@ -203,4 +203,13 @@
   <data name="RouteMenuButtonText" xml:space="preserve">
     <value>route</value>
   </data>
+  <data name="LocationDisabledMessageBoxText" xml:space="preserve">
+    <value>Location is disabled in phone settings</value>
+  </data>
+  <data name="NoCurrentLocationMessageBoxText" xml:space="preserve">
+    <value>Your current location not available</value>
+  </data>
+  <data name="NoMatchFoundMessageBoxText" xml:space="preserve">
+    <value>No match found. Narrow your search e.g. "Seattle Wa"</value>
+  </data>
 </root>
