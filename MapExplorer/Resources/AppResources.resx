@@ -204,12 +204,24 @@
     <value>route</value>
   </data>
   <data name="LocationDisabledMessageBoxText" xml:space="preserve">
-    <value>Location is disabled in phone settings</value>
+    <value>Current location cannot be obtained. Check that location service is turned on in phone settings.</value>
   </data>
   <data name="NoCurrentLocationMessageBoxText" xml:space="preserve">
-    <value>Your current location not available</value>
+    <value>Your current location not available.</value>
   </data>
   <data name="NoMatchFoundMessageBoxText" xml:space="preserve">
-    <value>No match found. Narrow your search e.g. "Seattle Wa"</value>
+    <value>No match found. Narrow your search e.g. "Seattle Wa".</value>
+  </data>
+  <data name="LocationAllowButtonText" xml:space="preserve">
+    <value>Allow</value>
+  </data>
+  <data name="LocationCancelButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="LocationUsageInfoText" xml:space="preserve">
+    <value>Your current location helps us provide you with better exploring experience.</value>
+  </data>
+  <data name="LocationUsageQueryText" xml:space="preserve">
+    <value>Allow map explorer to access and use your location?</value>
   </data>
 </root>

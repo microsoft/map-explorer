@@ -30,27 +30,6 @@ namespace MapExplorer
     public partial class App : Application
     {
         /// <summary>
-        /// Class variable for Settings property
-        /// </summary>
-        private static Settings settings = null;
-
-        /// <summary>
-        /// A static Settings used by the views to bind against.
-        /// </summary>
-        /// <returns>The Settings object.</returns>
-        public static Settings Settings
-        {
-            get
-            {
-                // Delay creation of the view model until necessary
-                if (settings == null)
-                    settings = new Settings();
-
-                return settings;
-            }
-        }
-
-        /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>

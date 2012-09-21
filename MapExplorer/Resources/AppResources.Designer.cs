@@ -223,11 +223,47 @@ namespace MapExplorer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Location is disabled in phone settings.
+        ///   Looks up a localized string similar to Allow.
+        /// </summary>
+        public static string LocationAllowButtonText {
+            get {
+                return ResourceManager.GetString("LocationAllowButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string LocationCancelButtonText {
+            get {
+                return ResourceManager.GetString("LocationCancelButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current location cannot be obtained. Check that location service is turned on in phone settings..
         /// </summary>
         public static string LocationDisabledMessageBoxText {
             get {
                 return ResourceManager.GetString("LocationDisabledMessageBoxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your current location helps us provide you with better exploring experience..
+        /// </summary>
+        public static string LocationUsageInfoText {
+            get {
+                return ResourceManager.GetString("LocationUsageInfoText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow map explorer to access and use your location?.
+        /// </summary>
+        public static string LocationUsageQueryText {
+            get {
+                return ResourceManager.GetString("LocationUsageQueryText", resourceCulture);
             }
         }
         
