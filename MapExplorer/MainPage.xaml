@@ -49,7 +49,10 @@
         </Grid>
 
         <!--Directions from current location to destination are shown in this panel.-->
-        <TextBlock x:Name="RouteDirections" Grid.Row="2" Text="Route Directions" FontSize="{StaticResource PhoneFontSizeLarge}" Margin="12,10,0,0"/>
+        <StackPanel x:Name="RouteDirections" Grid.Row="2" Margin="3,0,0,0">
+            <TextBlock x:Name="DestinationText" Style="{StaticResource PhoneTextTitle3Style}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold"/>
+            <TextBlock x:Name="DestinationDetailsText" Style="{StaticResource PhoneTextNormalStyle}"/>
+        </StackPanel>
         <Button x:Name="DriveButton" Content="Drive" IsEnabled="False" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,100,0" Click="TravelModeButton_Click"/>
         <Button x:Name="WalkButton" Content="Walk" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Click="TravelModeButton_Click"/>
         <phone:LongListSelector x:Name="RouteLLS" Grid.Row="3" Margin="10,0,10,0" Background="Transparent" ItemTemplate="{StaticResource RouteListTemplate}" LayoutMode="List" 
@@ -75,8 +78,8 @@
                 <TextBlock Margin="12,10,12,0" Text="{Binding Path=LocalizedResources.LocationUsageInfoText, Source={StaticResource LocalizedStrings}}" Style="{StaticResource PhoneTextNormalStyle}" TextWrapping="Wrap"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                <Button Content="{Binding Path=LocalizedResources.LocationAllowButtonText, Source={StaticResource LocalizedStrings}}" HorizontalAlignment="Left" Width="200" Click="AllowLocation_Click"/>
-                <Button Content="{Binding Path=LocalizedResources.LocationCancelButtonText, Source={StaticResource LocalizedStrings}}" HorizontalAlignment="Right" Width="200" Click="CancelLocation_Click"/>
+                <Button x:Name="AllowButton" Content="{Binding Path=LocalizedResources.LocationAllowButtonText, Source={StaticResource LocalizedStrings}}" HorizontalAlignment="Left" Width="200" Click="LocationUsage_Click"/>
+                <Button x:Name ="CancelButton" Content="{Binding Path=LocalizedResources.LocationCancelButtonText, Source={StaticResource LocalizedStrings}}" HorizontalAlignment="Right" Width="200" Click="LocationUsage_Click"/>
             </StackPanel>
         </Grid>
 
