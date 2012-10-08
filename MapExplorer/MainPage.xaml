@@ -59,7 +59,7 @@
             IsGroupingEnabled="False" SelectionChanged="RouteManeuverSelected"/>
 
         <!--Panel of buttons to control map cartography mode-->
-        <StackPanel Grid.RowSpan="4" x:Name="ModePanel" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="271" Margin="0,0,0,12">
+        <StackPanel Grid.RowSpan="4" x:Name="ModePanel" Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="281" Margin="0,0,0,12">
             <Button x:Name="RoadButton" Content="Road" IsEnabled="False" Click="CartographicModeButton_Click"/>
             <Button x:Name="AerialButton" Content="Aerial" Click="CartographicModeButton_Click"/>
             <Button x:Name="HybridButton" Content="Hybrid" Click="CartographicModeButton_Click"/>
@@ -67,7 +67,7 @@
         </StackPanel>
 
         <!--Sliders to control map pitch and heading.-->
-        <Slider x:Name="PitchSlider" Grid.RowSpan="4" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="201" Width="45" Margin="0,0,0,82" Minimum="0" Maximum="70" Value="0" ValueChanged="PitchValueChanged"/>
+        <Slider x:Name="PitchSlider" Grid.RowSpan="4" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="211" Width="45" Margin="0,0,12,82" Minimum="0" Maximum="70" Value="0" ValueChanged="PitchValueChanged"/>
         <Slider x:Name="HeadingSlider" Grid.RowSpan="4" VerticalAlignment="Bottom" HorizontalAlignment="Center" Height="80" Width="250" Margin="0,0,0,-20" Maximum="540" Minimum="180" Value="360" ValueChanged="HeadingValueChanged"/>
 
         <!--Location panel is shown at application startup 

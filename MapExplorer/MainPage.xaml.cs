@@ -12,7 +12,6 @@ using System.Device.Location;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -35,33 +34,27 @@ namespace MapExplorer
         public MainPage()
         {
             InitializeComponent();
-            settings = IsolatedStorageSettings.ApplicationSettings;
+            Settings = IsolatedStorageSettings.ApplicationSettings;
         }
 
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            if (isNewInstance)
+            if (_isNewInstance)
             {
-                isNewInstance = false;
+                _isNewInstance = false;
 
                 LoadSettings();
-                if (isLocationAllowed)
+                if (_isLocationAllowed)
                 {
                     LocationPanel.Visibility = Visibility.Collapsed;
                     BuildApplicationBar();
-                    GetCurrentLocation();
+                    GetCurrentCoordinate();
                 }
             }
 
             DrawMapMarkers();
-        }
-
-        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-            SaveSettings();
         }
 
         /// <summary>
@@ -73,8 +66,9 @@ namespace MapExplorer
             BuildApplicationBar();
             if (sender == AllowButton)
             {
-                isLocationAllowed = true;
-                GetCurrentLocation();
+                _isLocationAllowed = true;
+                SaveSettings();
+                GetCurrentCoordinate();
             }
         }
 
@@ -84,7 +78,7 @@ namespace MapExplorer
         private void Search_Click(object sender, EventArgs e)
         {
             HideDirections();
-            isRouteSearch = false;
+            _isRouteSearch = false;
             SearchTextBox.SelectAll();
             SearchTextBox.Visibility = Visibility.Visible;
             SearchTextBox.Focus();
@@ -97,7 +91,7 @@ namespace MapExplorer
         {
             HideDirections();
 
-            if (!isLocationAllowed)
+            if (!_isLocationAllowed)
             {
                 MessageBoxResult result = MessageBox.Show(AppResources.NoCurrentLocationMessageBoxText + " " + AppResources.LocationUsageQueryText,
                                                           AppResources.ApplicationTitle,
@@ -105,8 +99,9 @@ namespace MapExplorer
 
                 if (result == MessageBoxResult.OK)
                 {
-                    isLocationAllowed = true;
-                    GetCurrentLocation();
+                    _isLocationAllowed = true;
+                    SaveSettings();
+                    GetCurrentCoordinate();
                 }
             }
             else if (MyCoordinate == null)
@@ -115,7 +110,7 @@ namespace MapExplorer
             }
             else
             {
-                isRouteSearch = true;
+                _isRouteSearch = true;
                 SearchTextBox.SelectAll();
                 SearchTextBox.Visibility = Visibility.Visible;
                 SearchTextBox.Focus();
@@ -127,9 +122,9 @@ namespace MapExplorer
         /// </summary>
         private void LocateMe_Click(object sender, EventArgs e)
         {
-            if (isLocationAllowed)
+            if (_isLocationAllowed)
             {
-                GetCurrentLocation();
+                GetCurrentCoordinate();
             }
             else
             {
@@ -139,8 +134,9 @@ namespace MapExplorer
 
                 if (result == MessageBoxResult.OK)
                 {
-                    isLocationAllowed = true;
-                    GetCurrentLocation();
+                    _isLocationAllowed = true;
+                    SaveSettings();
+                    GetCurrentCoordinate();
                 }
             }
         }
@@ -165,7 +161,6 @@ namespace MapExplorer
                     HideDirections();
                     AppBarDirectionsMenuItem.IsEnabled = false;
 
-                    ShowProgressIndicator(AppResources.SearchingProgressText);
                     SearchForTerm(SearchTextBox.Text);
                     this.Focus();
                 }
@@ -234,8 +229,8 @@ namespace MapExplorer
         /// </summary>
         private void Directions_Click(object sender, EventArgs e)
         {
-            isDirectionsShown = !isDirectionsShown;
-            if (isDirectionsShown)
+            _isDirectionsShown = !_isDirectionsShown;
+            if (_isDirectionsShown)
             {
                 // Center map on the starting point (phone location) and zoom quite close
                 MyMap.SetView(MyCoordinate, 16, MapAnimationKind.Parabolic);
@@ -297,9 +292,9 @@ namespace MapExplorer
             {
                 AppBarColorModeMenuItem.IsEnabled = true;
                 // To change color mode back to dark
-                if (isTemporarilyLight)
+                if (_isTemporarilyLight)
                 {
-                    isTemporarilyLight = false;
+                    _isTemporarilyLight = false;
                     MyMap.ColorMode = MapColorMode.Dark;
                 }
                 MyMap.CartographicMode = MapCartographicMode.Road;
@@ -320,7 +315,7 @@ namespace MapExplorer
                 // To enable terrain mode when color mode is dark
                 if (MyMap.ColorMode == MapColorMode.Dark)
                 {
-                    isTemporarilyLight = true;
+                    _isTemporarilyLight = true;
                     MyMap.ColorMode = MapColorMode.Light;
                 }
                 MyMap.CartographicMode = MapCartographicMode.Terrain;
@@ -342,11 +337,11 @@ namespace MapExplorer
 
             if (sender == DriveButton)
             {
-                travelMode = TravelMode.Driving;
+                _travelMode = TravelMode.Driving;
             }
             else if (sender == WalkButton)
             {
-                travelMode = TravelMode.Walking;
+                _travelMode = TravelMode.Walking;
             }
             DriveButton.IsEnabled = !DriveButton.IsEnabled;
             WalkButton.IsEnabled = !WalkButton.IsEnabled;
@@ -374,7 +369,7 @@ namespace MapExplorer
         /// </summary>
         private void ShowDirections()
         {
-            isDirectionsShown = true;
+            _isDirectionsShown = true;
             AppBarDirectionsMenuItem.Text = AppResources.DirectionsOffMenuItemText;
             DirectionsTitleRowDefinition.Height = GridLength.Auto;
             DirectionsRowDefinition.Height = new GridLength(2, GridUnitType.Star);
@@ -388,7 +383,7 @@ namespace MapExplorer
         /// </summary>
         private void HideDirections()
         {
-            isDirectionsShown = false;
+            _isDirectionsShown = false;
             AppBarDirectionsMenuItem.Text = AppResources.DirectionsOnMenuItemText;
             DirectionsTitleRowDefinition.Height = new GridLength(0);
             DirectionsRowDefinition.Height = new GridLength(0);
@@ -403,11 +398,12 @@ namespace MapExplorer
         /// <param name="searchTerm">Search term for location or destination</param>
         private void SearchForTerm(String searchTerm)
         {
-            GeocodeQuery geocodeQuery = new GeocodeQuery();
-            geocodeQuery.SearchTerm = searchTerm;
-            geocodeQuery.GeoCoordinate = new GeoCoordinate(0, 0);
-            geocodeQuery.QueryCompleted += GeocodeQuery_QueryCompleted;
-            geocodeQuery.QueryAsync();
+            ShowProgressIndicator(AppResources.SearchingProgressText);
+            MyGeocodeQuery = new GeocodeQuery();
+            MyGeocodeQuery.SearchTerm = searchTerm;
+            MyGeocodeQuery.GeoCoordinate = MyCoordinate == null ? new GeoCoordinate(0, 0) : MyCoordinate;
+            MyGeocodeQuery.QueryCompleted += GeocodeQuery_QueryCompleted;
+            MyGeocodeQuery.QueryAsync();
         }
 
         /// <summary>
@@ -421,7 +417,7 @@ namespace MapExplorer
             {
                 if (e.Result.Count > 0)
                 {
-                    if (isRouteSearch)
+                    if (_isRouteSearch) // Query is made to locate the destination of a route
                     {
                         // Only store the destination for drawing the map markers
                         MyCoordinates.Add(e.Result[0].GeoCoordinate);
@@ -432,16 +428,15 @@ namespace MapExplorer
                         routeCoordinates.Add(e.Result[0].GeoCoordinate);
                         CalculateRoute(routeCoordinates);
                     }
-                    else
+                    else // Query is made to search the map for a keyword
                     {
-                        // A generic search for location(s) was made with a search term.
                         // Add all results to MyCoordinates for drawing the map markers.
                         for (int i = 0; i < e.Result.Count; i++)
                         {
                             MyCoordinates.Add(e.Result[i].GeoCoordinate);
                         }
 
-                        // Just center on the first result.
+                        // Center on the first result.
                         MyMap.SetView(e.Result[0].GeoCoordinate, 10, MapAnimationKind.Parabolic);
                     }
                 }
@@ -449,6 +444,8 @@ namespace MapExplorer
                 {
                     MessageBox.Show(AppResources.NoMatchFoundMessageBoxText);
                 }
+
+                MyGeocodeQuery.Dispose();
             }
             DrawMapMarkers();
         }
@@ -460,11 +457,11 @@ namespace MapExplorer
         private void CalculateRoute(List<GeoCoordinate> route)
         {
             ShowProgressIndicator(AppResources.CalculatingRouteProgressText);
-            RouteQuery routeQuery = new RouteQuery();
-            routeQuery.TravelMode = travelMode;
-            routeQuery.Waypoints = route;
-            routeQuery.QueryCompleted += RouteQuery_QueryCompleted;
-            routeQuery.QueryAsync();
+            MyRouteQuery = new RouteQuery();
+            MyRouteQuery.TravelMode = _travelMode;
+            MyRouteQuery.Waypoints = route;
+            MyRouteQuery.QueryCompleted += RouteQuery_QueryCompleted;
+            MyRouteQuery.QueryAsync();
         }
 
         /// <summary>
@@ -480,13 +477,14 @@ namespace MapExplorer
                 MyMapRoute = new MapRoute(MyRoute);
                 MyMap.AddRoute(MyMapRoute);
 
+                // Update route information and directions
                 DestinationText.Text = SearchTextBox.Text;
                 double distanceInKm = (double)MyRoute.LengthInMeters / 1000;
                 DestinationDetailsText.Text = distanceInKm.ToString("0.0") + " km, " 
                                               + MyRoute.EstimatedDuration.Hours + " hrs " 
                                               + MyRoute.EstimatedDuration.Minutes + " mins.";
 
-                List<string> RouteInstructions = new List<string>();
+                List<string> routeInstructions = new List<string>();
                 foreach (RouteLeg leg in MyRoute.Legs)
                 {
                     for (int i = 0; i < leg.Maneuvers.Count; i++)
@@ -500,14 +498,14 @@ namespace MapExplorer
                             distanceInKm = (double)leg.Maneuvers[i - 1].LengthInMeters / 1000;
                             instructionText += " (" + distanceInKm.ToString("0.0") + " km)";
                         }
-                        RouteInstructions.Add(instructionText);
+                        routeInstructions.Add(instructionText);
                     }
                 }
-                RouteLLS.ItemsSource = RouteInstructions;
+                RouteLLS.ItemsSource = routeInstructions;
 
                 AppBarDirectionsMenuItem.IsEnabled = true;
 
-                if (isDirectionsShown)
+                if (_isDirectionsShown)
                 {
                     // Center map on the starting point (phone location) and zoom quite close
                     MyMap.SetView(MyCoordinate, 16, MapAnimationKind.Parabolic);
@@ -517,15 +515,16 @@ namespace MapExplorer
                     // Center map and zoom so that whole route is visible
                     MyMap.SetView(MyRoute.Legs[0].BoundingBox, MapAnimationKind.Parabolic);
                 }
+                MyRouteQuery.Dispose();
             }
             DrawMapMarkers();
         }
 
         /// <summary>
-        /// Method to get current location asynchronously so that the UI thread is not blocked. Updates MyCoordinate.
+        /// Method to get current coordinate asynchronously so that the UI thread is not blocked. Updates MyCoordinate.
         /// Using Location API requires ID_CAP_LOCATION capability to be included in the Application manifest file.
         /// </summary>
-        private async void GetCurrentLocation()
+        private async void GetCurrentCoordinate()
         {
             ShowProgressIndicator(AppResources.GettingLocationProgressText);
             Geolocator geolocator = new Geolocator();
@@ -539,21 +538,14 @@ namespace MapExplorer
                     MyCoordinate = new GeoCoordinate(currentPosition.Coordinate.Latitude, currentPosition.Coordinate.Longitude);
                     DrawMapMarkers();
                     MyMap.SetView(MyCoordinate, 10, MapAnimationKind.Parabolic);
-                    HideProgressIndicator();
                 });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show(AppResources.LocationDisabledMessageBoxText);
-                HideProgressIndicator();
             }
             catch (Exception ex)
             {
-                // something else happened acquring the location
-                // ex.HResult can be read to know the specific error code but it is not recommended
+                // Couldn't get current location - location might be disabled in settings
                 MessageBox.Show(AppResources.LocationDisabledMessageBoxText);
-                HideProgressIndicator();
             }
+            HideProgressIndicator();
         }
 
         /// <summary>
@@ -562,31 +554,31 @@ namespace MapExplorer
         private void DrawMapMarkers()
         {
             MyMap.Layers.Clear();
-            MapLayer MyLayer = new MapLayer();
+            MapLayer mapLayer = new MapLayer();
 
             // Draw marker for current position
             if (MyCoordinate != null)
             {
-                DrawMapMarker(MyCoordinate, Colors.Red, MyLayer);
+                DrawMapMarker(MyCoordinate, Colors.Red, mapLayer);
             }
 
             // Draw markers for location(s) / destination(s)
             for (int i = 0; i < MyCoordinates.Count; i++)
             {
-                DrawMapMarker(MyCoordinates[i], Colors.Blue, MyLayer);
+                DrawMapMarker(MyCoordinates[i], Colors.Blue, mapLayer);
             }
 
             // Draw markers for possible waypoints when directions are shown.
             // Start and end points are already drawn with different colors.
-            if (isDirectionsShown && MyRoute.LengthInMeters > 0)
+            if (_isDirectionsShown && MyRoute.LengthInMeters > 0)
             {
                 for (int i = 1; i < MyRoute.Legs[0].Maneuvers.Count - 1; i++)
                 {
-                    DrawMapMarker(MyRoute.Legs[0].Maneuvers[i].StartGeoCoordinate, Colors.Purple, MyLayer);
+                    DrawMapMarker(MyRoute.Legs[0].Maneuvers[i].StartGeoCoordinate, Colors.Purple, mapLayer);
                 }
             }
 
-            MyMap.Layers.Add(MyLayer);
+            MyMap.Layers.Add(mapLayer);
         }
 
         /// <summary>
@@ -598,20 +590,18 @@ namespace MapExplorer
         private void DrawMapMarker(GeoCoordinate coordinate, Color color, MapLayer mapLayer)
         {
             // Create a map marker
-            Polygon MyPolygon = new Polygon();
-            MyPolygon.Points.Add(new Point(0, 0));
-            MyPolygon.Points.Add(new Point(0, 75));
-            MyPolygon.Points.Add(new Point(25, 0));
-            MyPolygon.Fill = new SolidColorBrush(color);
+            Polygon polygon = new Polygon();
+            polygon.Points.Add(new Point(0, 0));
+            polygon.Points.Add(new Point(0, 75));
+            polygon.Points.Add(new Point(25, 0));
+            polygon.Fill = new SolidColorBrush(color);
 
             //Create a MapOverlay and add marker.
-            MapOverlay MyOverlay = new MapOverlay();
-            MyOverlay.Content = MyPolygon;
-            MyOverlay.GeoCoordinate = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
-            MyOverlay.PositionOrigin = new Point(0.0, 1.0);
-
-            // Add overlay to map.
-            mapLayer.Add(MyOverlay);
+            MapOverlay overlay = new MapOverlay();
+            overlay.Content = polygon;
+            overlay.GeoCoordinate = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
+            overlay.PositionOrigin = new Point(0.0, 1.0);
+            mapLayer.Add(overlay);
         }
 
         /// <summary>
@@ -672,14 +662,14 @@ namespace MapExplorer
         /// <param name="msg">Text shown in progress indicator</param>
         private void ShowProgressIndicator(String msg)
         {
-            if (progressIndicator == null)
+            if (ProgressIndicator == null)
             {
-                progressIndicator = new ProgressIndicator();
-                progressIndicator.IsIndeterminate = true;
+                ProgressIndicator = new ProgressIndicator();
+                ProgressIndicator.IsIndeterminate = true;
             }
-            progressIndicator.Text = msg;
-            progressIndicator.IsVisible = true;
-            SystemTray.SetProgressIndicator(this, progressIndicator);
+            ProgressIndicator.Text = msg;
+            ProgressIndicator.IsVisible = true;
+            SystemTray.SetProgressIndicator(this, ProgressIndicator);
         }
 
         /// <summary>
@@ -687,8 +677,8 @@ namespace MapExplorer
         /// </summary>
         private void HideProgressIndicator()
         {
-            progressIndicator.IsVisible = false;
-            SystemTray.SetProgressIndicator(this, progressIndicator);
+            ProgressIndicator.IsVisible = false;
+            SystemTray.SetProgressIndicator(this, ProgressIndicator);
         }
 
         /// <summary>
@@ -696,9 +686,9 @@ namespace MapExplorer
         /// </summary>
         public void LoadSettings()
         {
-            if (settings.Contains("isLocationAllowed"))
+            if (Settings.Contains("isLocationAllowed"))
             {
-                isLocationAllowed = (bool)settings["isLocationAllowed"];
+                _isLocationAllowed = (bool)Settings["isLocationAllowed"];
             }
         }
 
@@ -707,17 +697,17 @@ namespace MapExplorer
         /// </summary>
         public void SaveSettings()
         {
-            if (settings.Contains("isLocationAllowed"))
+            if (Settings.Contains("isLocationAllowed"))
             {
-                if ((bool)settings["isLocationAllowed"] != isLocationAllowed)
+                if ((bool)Settings["isLocationAllowed"] != _isLocationAllowed)
                 {
                     // Store the new value
-                    settings["isLocationAllowed"] = isLocationAllowed;
+                    Settings["isLocationAllowed"] = _isLocationAllowed;
                 }
             }
             else
             {
-                settings.Add("isLocationAllowed", isLocationAllowed);
+                Settings.Add("isLocationAllowed", _isLocationAllowed);
             }
         }
 
@@ -729,13 +719,19 @@ namespace MapExplorer
         private ApplicationBarMenuItem AppBarAboutMenuItem = null;
 
         // Progress indicator shown in system tray
-        private ProgressIndicator progressIndicator = null;
+        private ProgressIndicator ProgressIndicator = null;
 
         // My current location
         private GeoCoordinate MyCoordinate = null;
 
         // List of coordinates representing search hits / destination of route
         private List<GeoCoordinate> MyCoordinates = new List<GeoCoordinate>();
+
+        // Geocode query
+        private GeocodeQuery MyGeocodeQuery = null;
+
+        // Route query
+        private RouteQuery MyRouteQuery = null;
 
         // Route information
         private Route MyRoute = null;
@@ -746,36 +742,36 @@ namespace MapExplorer
         /// <summary>
         /// True when this object instance has been just created, otherwise false
         /// </summary>
-        private bool isNewInstance = true;
+        private bool _isNewInstance = true;
 
         /// <summary>
         /// True when access to user location is allowed, otherwise false
         /// </summary>
-        private bool isLocationAllowed = false;
+        private bool _isLocationAllowed = false;
 
         /// <summary>
         /// True when color mode has been temporarily set to light, otherwise false
         /// </summary>
-        private bool isTemporarilyLight = false;
+        private bool _isTemporarilyLight = false;
 
         /// <summary>
         /// True when route is being searched, otherwise false
         /// </summary>
-        private bool isRouteSearch = false;
+        private bool _isRouteSearch = false;
 
         /// <summary>
         /// True when directions are shown, otherwise false
         /// </summary>
-        private bool isDirectionsShown = false;
+        private bool _isDirectionsShown = false;
 
         /// <summary>
         /// Travel mode used when calculating route
         /// </summary>
-        private TravelMode travelMode = TravelMode.Driving;
+        private TravelMode _travelMode = TravelMode.Driving;
 
         /// <summary>
         /// Used for saving location usage permission
         /// </summary>
-        private IsolatedStorageSettings settings;
+        private IsolatedStorageSettings Settings;
     }
 }
