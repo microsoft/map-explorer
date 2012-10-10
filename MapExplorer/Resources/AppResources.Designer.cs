@@ -286,7 +286,16 @@ namespace MapExplorer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No match found. Narrow your search e.g. &quot;Seattle Wa&quot;.
+        ///   Looks up a localized string similar to Location information not found..
+        /// </summary>
+        public static string NoInfoMessageBoxText {
+            get {
+                return ResourceManager.GetString("NoInfoMessageBoxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No match found. Narrow your search e.g. &quot;Seattle Wa&quot;..
         /// </summary>
         public static string NoMatchFoundMessageBoxText {
             get {

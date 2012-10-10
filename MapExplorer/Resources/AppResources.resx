@@ -224,4 +224,7 @@
   <data name="LocationUsageQueryText" xml:space="preserve">
     <value>Allow map explorer to access and use your location?</value>
   </data>
+  <data name="NoInfoMessageBoxText" xml:space="preserve">
+    <value>Location information not found.</value>
+  </data>
 </root>

@@ -106,7 +106,7 @@ namespace MapExplorer
             }
             else if (MyCoordinate == null)
             {
-                MessageBox.Show(AppResources.NoCurrentLocationMessageBoxText);
+                MessageBox.Show(AppResources.NoCurrentLocationMessageBoxText, AppResources.ApplicationTitle, MessageBoxButton.OK);
             }
             else
             {
@@ -365,6 +365,15 @@ namespace MapExplorer
         }
 
         /// <summary>
+        /// Event handler for map zoom level value change.
+        /// Drawing accuracy radius has dependency on map zoom level.
+        /// </summary>
+        private void ZoomLevelChanged(object sender, EventArgs e)
+        {
+            DrawMapMarkers();
+        }
+
+        /// <summary>
         /// Method for showing directions panel on main page.
         /// </summary>
         private void ShowDirections()
@@ -407,7 +416,7 @@ namespace MapExplorer
         }
 
         /// <summary>
-        /// A callback method for geocode query.
+        /// Event handler for geocode query completed.
         /// </summary>
         /// <param name="e">Results of the geocode query - list of locations</param>
         private void GeocodeQuery_QueryCompleted(object sender, QueryCompletedEventArgs<IList<MapLocation>> e)
@@ -442,7 +451,7 @@ namespace MapExplorer
                 }
                 else
                 {
-                    MessageBox.Show(AppResources.NoMatchFoundMessageBoxText);
+                    MessageBox.Show(AppResources.NoMatchFoundMessageBoxText, AppResources.ApplicationTitle, MessageBoxButton.OK);
                 }
 
                 MyGeocodeQuery.Dispose();
@@ -465,7 +474,7 @@ namespace MapExplorer
         }
 
         /// <summary>
-        /// A callback method for route query.
+        /// Event handler for route query completed.
         /// </summary>
         /// <param name="e">Results of the geocode query - the route</param>
         private void RouteQuery_QueryCompleted(object sender, QueryCompletedEventArgs<Route> e)
@@ -521,6 +530,50 @@ namespace MapExplorer
         }
 
         /// <summary>
+        /// Event handler for clicking a map marker. 
+        /// Initiates reverse geocode query.
+        /// </summary>
+        private void Marker_Click(object sender, EventArgs e)
+        {
+            Polygon p = (Polygon)sender;
+            GeoCoordinate geoCoordinate = (GeoCoordinate)p.Tag;
+            MyReverseGeocodeQuery = new ReverseGeocodeQuery();
+            MyReverseGeocodeQuery.GeoCoordinate = new GeoCoordinate(geoCoordinate.Latitude, geoCoordinate.Longitude);
+            MyReverseGeocodeQuery.QueryCompleted += ReverseGeocodeQuery_QueryCompleted;
+            MyReverseGeocodeQuery.QueryAsync();
+        }
+
+        /// <summary>
+        /// Event handler for reverse geocode query.
+        /// </summary>
+        /// <param name="e">Results of the reverse geocode query - list of locations</param>
+        private void ReverseGeocodeQuery_QueryCompleted(object sender, QueryCompletedEventArgs<IList<MapLocation>> e)
+        {
+            if (e.Error == null)
+            {
+                if (e.Result.Count > 0)
+                {
+                    MapAddress address = e.Result[0].Information.Address;
+                    String msgBoxText = "";
+                    if (address.Street.Length > 0)
+                    {
+                        msgBoxText += "\n" + address.Street;
+                        if (address.HouseNumber.Length > 0) msgBoxText += " " + address.HouseNumber;
+                    }
+                    if (address.PostalCode.Length > 0) msgBoxText += "\n" + address.PostalCode;
+                    if (address.City.Length > 0) msgBoxText += "\n" + address.City;
+                    if (address.Country.Length > 0) msgBoxText += "\n" + address.Country;
+                    MessageBox.Show(msgBoxText, AppResources.ApplicationTitle, MessageBoxButton.OK);
+                }
+                else
+                {
+                    MessageBox.Show(AppResources.NoInfoMessageBoxText, AppResources.ApplicationTitle, MessageBoxButton.OK);
+                }
+                MyReverseGeocodeQuery.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Method to get current coordinate asynchronously so that the UI thread is not blocked. Updates MyCoordinate.
         /// Using Location API requires ID_CAP_LOCATION capability to be included in the Application manifest file.
         /// </summary>
@@ -528,10 +581,12 @@ namespace MapExplorer
         {
             ShowProgressIndicator(AppResources.GettingLocationProgressText);
             Geolocator geolocator = new Geolocator();
-            geolocator.DesiredAccuracyInMeters = 10;
+            geolocator.DesiredAccuracy = PositionAccuracy.High;
+
             try
             {
                 Geoposition currentPosition = await geolocator.GetGeopositionAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(10));
+                _accuracy = currentPosition.Coordinate.Accuracy;
 
                 Dispatcher.BeginInvoke(() =>
                 {
@@ -543,7 +598,7 @@ namespace MapExplorer
             catch (Exception ex)
             {
                 // Couldn't get current location - location might be disabled in settings
-                MessageBox.Show(AppResources.LocationDisabledMessageBoxText);
+                MessageBox.Show(AppResources.LocationDisabledMessageBoxText, AppResources.ApplicationTitle, MessageBoxButton.OK);
             }
             HideProgressIndicator();
         }
@@ -559,6 +614,7 @@ namespace MapExplorer
             // Draw marker for current position
             if (MyCoordinate != null)
             {
+                DrawAccuracyRadius(mapLayer);
                 DrawMapMarker(MyCoordinate, Colors.Red, mapLayer);
             }
 
@@ -596,11 +652,38 @@ namespace MapExplorer
             polygon.Points.Add(new Point(25, 0));
             polygon.Fill = new SolidColorBrush(color);
 
-            //Create a MapOverlay and add marker.
+            // Enable marker to be tapped for location information
+            polygon.Tag = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
+            polygon.MouseLeftButtonUp += new MouseButtonEventHandler(Marker_Click);
+
+            // Create a MapOverlay and add marker.
             MapOverlay overlay = new MapOverlay();
             overlay.Content = polygon;
             overlay.GeoCoordinate = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
             overlay.PositionOrigin = new Point(0.0, 1.0);
+            mapLayer.Add(overlay);
+        }
+
+        /// <summary>
+        /// Helper method to draw location accuracy on top of the map.
+        /// </summary>
+        /// <param name="mapLayer">Map layer to add the accuracy circle</param>
+        private void DrawAccuracyRadius(MapLayer mapLayer)
+        {
+            // The ground resolution (in meters per pixel) varies depending on the level of detail 
+            // and the latitude at which it’s measured. It can be calculated as follows:
+            double metersPerPixels = (Math.Cos(MyCoordinate.Latitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (256 * Math.Pow(2, MyMap.ZoomLevel));
+            double radius = _accuracy / metersPerPixels;
+
+            Ellipse ellipse = new Ellipse();
+            ellipse.Width = radius * 2;
+            ellipse.Height = radius * 2;
+            ellipse.Fill = new SolidColorBrush(Color.FromArgb(75, 200, 0, 0));
+
+            MapOverlay overlay = new MapOverlay();
+            overlay.Content = ellipse;
+            overlay.GeoCoordinate = new GeoCoordinate(MyCoordinate.Latitude, MyCoordinate.Longitude);
+            overlay.PositionOrigin = new Point(0.5, 0.5);
             mapLayer.Add(overlay);
         }
 
@@ -733,6 +816,9 @@ namespace MapExplorer
         // Route query
         private RouteQuery MyRouteQuery = null;
 
+        // Reverse geocode query
+        private ReverseGeocodeQuery MyReverseGeocodeQuery = null;
+
         // Route information
         private Route MyRoute = null;
 
@@ -768,6 +854,11 @@ namespace MapExplorer
         /// Travel mode used when calculating route
         /// </summary>
         private TravelMode _travelMode = TravelMode.Driving;
+
+        /// <summary>
+        /// Accuracy of my current location in meters;
+        /// </summary>
+        private double _accuracy = 0.0;
 
         /// <summary>
         /// Used for saving location usage permission

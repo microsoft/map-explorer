@@ -44,7 +44,7 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1">
-            <maps:Map x:Name="MyMap"/>
+            <maps:Map x:Name="MyMap" ZoomLevelChanged="ZoomLevelChanged"/>
             <TextBox x:Name="SearchTextBox" Visibility="Collapsed" InputScope="Maps" LostFocus="SearchTextBox_LostFocus" KeyDown="SearchTextBox_KeyDown" HorizontalAlignment="Left" Height="72" Margin="12,0,12,10" TextWrapping="Wrap" VerticalAlignment="Top" Width="456"/>
         </Grid>
 
