@@ -537,10 +537,13 @@ namespace MapExplorer
         {
             Polygon p = (Polygon)sender;
             GeoCoordinate geoCoordinate = (GeoCoordinate)p.Tag;
-            MyReverseGeocodeQuery = new ReverseGeocodeQuery();
-            MyReverseGeocodeQuery.GeoCoordinate = new GeoCoordinate(geoCoordinate.Latitude, geoCoordinate.Longitude);
-            MyReverseGeocodeQuery.QueryCompleted += ReverseGeocodeQuery_QueryCompleted;
-            MyReverseGeocodeQuery.QueryAsync();
+            if (MyReverseGeocodeQuery == null || !MyReverseGeocodeQuery.IsBusy)
+            {
+                MyReverseGeocodeQuery = new ReverseGeocodeQuery();
+                MyReverseGeocodeQuery.GeoCoordinate = new GeoCoordinate(geoCoordinate.Latitude, geoCoordinate.Longitude);
+                MyReverseGeocodeQuery.QueryCompleted += ReverseGeocodeQuery_QueryCompleted;
+                MyReverseGeocodeQuery.QueryAsync();
+            }
         }
 
         /// <summary>
