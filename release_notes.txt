@@ -1,10 +1,11 @@
 Map Explorer
 ============
 
-Map Explorer application demonstrates how to use the new Windows Phone 8 Map 
-component replacing the Bing Map component used in Windows 7. Map Explorer is a
-simple Silverlight application which enables the user to change properties of 
-the map component to see the effect on shown map.
+Map Explorer application demonstrates how to use the new Windows Phone 8 Map
+control replacing the Bing Maps control used in Windows 7 as well as how to
+use new map related features such as address search, locationing and routes.
+Map Explorer is a simple Silverlight application which enables the user to
+change properties of the map component to see the effect on shown map.
 
 The example has been developed with Silverlight for Windows Phone devices
 and tested to work on Windows Phone 8.
@@ -19,20 +20,21 @@ For more information on implementation and porting, visit the wiki pages:
 What's new
 ----------
 
-Version 1.0.0.0: Initial version of the Map Explorer
+Version 1.0.0.0: First release of the Map Explorer
 
 
 1. Usage
 -------------------------------------------------------------------------------
 
-<Technically oriented usage information i.e. not basic usage instructions but
- describing what happens underneath (e.g. establishing bluetooth connection).>
+This is a simple build-and-run solution. Learn about Map properties and Map
+related features by trying out the application. 
 
 
 2. Prerequisites
 -------------------------------------------------------------------------------
 
 - C# basics
+- Windows 8
 - Development environment Microsoft Visual Studio Express for Windows Phone 2012
 
 
@@ -42,24 +44,20 @@ Version 1.0.0.0: Initial version of the Map Explorer
 3.1 Folders
 -----------
 
- |                  The root folder contains the project file, the license
- |                  information and this file (release notes).
+ |                  The root folder contains the project file, the license 
+ |                  information and this file (release_notes.txt).
  |
- |- MapExplorer     Root folder for the implementation files.
+ |- MapExplorer     Root folder for the implementation files.  
  |  |
  |  |- Assets       Graphic assets like icons and tiles.
  |  |
  |  |- Properties   Application property files.
  |  |
  |  |- Resources    Application resources.
- |
- |- Screenshots     Screenshots of the application.
-
 
 
 3.2 Important files and classes
 -------------------------------
-
 
 | File                           | Description                                |
 |--------------------------------|--------------------------------------------|
@@ -73,15 +71,17 @@ Version 1.0.0.0: Initial version of the Map Explorer
 |                                |                                            |
 |--------------------------------|--------------------------------------------|
 
-| Class                             | Description                             |
-|-----------------------------------|-----------------------------------------|
-| Microsoft.Phone.Maps.Controls.Map | Windows Phone 8 component               |
-|                                   |                                         |
-|-----------------------------------|-----------------------------------------|
+
+| Class                          | Description                                |
+|--------------------------------|--------------------------------------------|
+| MainPage                       | This class is responsible for all the map  |
+|                                | related functionality of the app           |
+|                                |                                            |
+|--------------------------------|--------------------------------------------|
 
 
 3.3 Used APIs/Windows Phone Components
-----------------------------------------------
+--------------------------------------
 
 Microsoft.Phone.Maps.Controls
 Microsoft.Phone.Maps.Services
@@ -92,10 +92,10 @@ Windows.Devices.Geolocation
 4. Compatibility
 -------------------------------------------------------------------------------
 
- - Windows Phone 8
+- Windows Phone 8
 
-Tested to work on <phone models>. Developed with Microsoft Visual Studio Express
-for Windows Phone 2012.
+Tested to work on Lumia 820 and Lumia 920. 
+Developed with Microsoft Visual Studio Express for Windows Phone 2012.
 
 4.1 Required Capabilities
 -------------------------
@@ -120,22 +120,15 @@ None.
 
 Make sure you have the following installed:
  * Windows 8
- * Windows Phone SDK 8.0:
-   <link to that - TODO>
- * Silverlight Toolkit for Windows Phone 8.0 SDK Development: ?TODO
-   <link to that - TODO>
-
+ * Windows Phone SDK 8.0
 
 5.2 Using the WINDOWS PHONE 8 SDK
 ---------------------------------
 
 1. Open the SLN file:
    File > Open Project, select the file MapExplorer.sln
-2. <CHECK THE NEED! TODO> Add reference to Silverlight Toolkit:
-   Right-Click on project in Solution Explorer > Add reference... > Select
-   Microsoft.Phone.Controls.Toolkit under .NET > Press OK
-3. Select the target 'Emulator WVGA'.
-4. Press F5 to build the project and run it on the Windows Phone Emulator.
+2. Select the target 'Emulator WVGA'.
+3. Press F5 to build the project and run it on the Windows Phone Emulator.
 
 5.3 Deploying to Windows Phone 8
 --------------------------------
@@ -143,7 +136,6 @@ Make sure you have the following installed:
 Please see official documentation for deploying and testing applications on
 Windows Phone devices:
 http://msdn.microsoft.com/en-us/library/gg588378%28v=vs.92%29.aspx
-<TODO - CHECK THE ADDRESS>
 
 
 6. License
@@ -156,10 +148,15 @@ http://projects.developer.nokia.com/mapexplorer/browser/trunk/Licence.txt
 
 7. Related documentation
 -------------------------------------------------------------------------------
-<TODO>
+
+An article "Guide to the Maps" published on Nokia Lumia Developer's Library
+(http://www.developer.nokia.com/Resources/Library/Lumia/#!guide-to-the-maps.html) 
+describes the properties and usage of map control and map related features
+in detail using MapExplorer as an example.
 
 
 8. Version history
 -------------------------------------------------------------------------------
 
-1.0 Initial release
+1.0.0.0 First release of the Map Explorer
+
