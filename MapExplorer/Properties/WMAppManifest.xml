@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{4b41883b-a376-492b-8d41-5f8e0089ef47}" Title="Map Explorer" RuntimeType="Silverlight" Version="0.0.0.4" Genre="apps.normal" Author="MapExplorer author" Description="Sample description" Publisher="MapExplorer" PublisherID="{73a7bfc3-acbc-4b07-9245-82631fa85e7e}">
+  <App xmlns="" ProductID="{4b41883b-a376-492b-8d41-5f8e0089ef47}" Title="Map Explorer" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="MapExplorer author" Description="Sample description" Publisher="MapExplorer" PublisherID="{73a7bfc3-acbc-4b07-9245-82631fa85e7e}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />

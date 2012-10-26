@@ -2,25 +2,19 @@ Map Explorer
 ============
 
 Map Explorer application demonstrates how to use the new Windows Phone 8 Map
-control replacing the Bing Maps control used in Windows 7 as well as how to
-use new map related features such as address search, locationing and routes.
+control replacing the Bing Maps control used in Windows 7, as well as how to
+use new map-related features, such as address search, locationing, and routes.
 Map Explorer is a simple Silverlight application which enables the user to
 change properties of the map component to see the effect on shown map.
 
 The example has been developed with Silverlight for Windows Phone devices
-and tested to work on Windows Phone 8.
+and tested to work on Nokia Lumia devices with Windows Phone 8.
 
 This example application is hosted in Nokia Developer Projects:
 - http://projects.developer.nokia.com/mapexplorer
 
 For more information on implementation and porting, visit the wiki pages:
 - http://projects.developer.nokia.com/mapexplorer/wiki
-
-
-What's new
-----------
-
-Version 1.0.0.0: First release of the Map Explorer
 
 
 1. Usage
@@ -35,7 +29,7 @@ related features by trying out the application.
 
 - C# basics
 - Windows 8
-- Development environment Microsoft Visual Studio Express for Windows Phone 2012
+- Microsoft Visual Studio Express for Windows Phone 2012
 
 
 3. Project structure and implementation
@@ -61,10 +55,10 @@ related features by trying out the application.
 
 | File                           | Description                                |
 |--------------------------------|--------------------------------------------|
-| MainPage.xaml                  | The main page of the application with it's |
+| MainPage.xaml                  | The main page of the application with its  |
 |                                | most important component, the map.         |
 |--------------------------------|--------------------------------------------|
-| MainPage.xaml.cs               | The code behind file of the main page      |
+| MainPage.xaml.cs               | The code-behind file of the main page.     |
 |                                |                                            |
 |--------------------------------|--------------------------------------------|
 |                                |                                            |
@@ -74,8 +68,8 @@ related features by trying out the application.
 
 | Class                          | Description                                |
 |--------------------------------|--------------------------------------------|
-| MainPage                       | This class is responsible for all the map  |
-|                                | related functionality of the app           |
+| MainPage                       | This class is responsible for all the map- |
+|                                | related functionality of the app.          |
 |                                |                                            |
 |--------------------------------|--------------------------------------------|
 
@@ -94,7 +88,7 @@ Windows.Devices.Geolocation
 
 - Windows Phone 8
 
-Tested to work on Lumia 820 and Lumia 920. 
+Tested to work on Nokia Lumia 820 and Nokia Lumia 920. 
 Developed with Microsoft Visual Studio Express for Windows Phone 2012.
 
 4.1 Required Capabilities
@@ -151,12 +145,12 @@ http://projects.developer.nokia.com/mapexplorer/browser/trunk/Licence.txt
 
 An article "Guide to the Maps" published on Nokia Lumia Developer's Library
 (http://www.developer.nokia.com/Resources/Library/Lumia/#!guide-to-the-maps.html) 
-describes the properties and usage of map control and map related features
+describes the properties and usage of map control and map-related features
 in detail using MapExplorer as an example.
 
 
 8. Version history
 -------------------------------------------------------------------------------
 
-1.0.0.0 First release of the Map Explorer
+1.0.0.0 First release.
 
