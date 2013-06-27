@@ -227,4 +227,7 @@
   <data name="NoInfoMessageBoxText" xml:space="preserve">
     <value>Location information not found.</value>
   </data>
+  <data name="DownloadMenuButtonText" xml:space="preserve">
+    <value>download</value>
+  </data>
 </root>

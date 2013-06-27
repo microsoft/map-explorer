@@ -17,6 +17,12 @@ For more information on implementation and porting, visit the wiki pages:
 - http://projects.developer.nokia.com/mapexplorer/wiki
 
 
+What's new
+----------
+
+Version 1.1.0.0: Support for downloading maps. Mapping APIs T&C compliance.
+
+
 1. Usage
 -------------------------------------------------------------------------------
 
@@ -152,5 +158,6 @@ in detail using MapExplorer as an example.
 8. Version history
 -------------------------------------------------------------------------------
 
+1.1.0.0 Support for downloading maps. Mapping APIs T&C compliance.
 1.0.0.0 First release.
 

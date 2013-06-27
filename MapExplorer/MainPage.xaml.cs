@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright © 2012 Nokia Corporation. All rights reserved.
+ * Copyright © 2012-2013 Nokia Corporation. All rights reserved.
  * Nokia and Nokia Connecting People are registered trademarks of Nokia Corporation. 
  * Other product and company names mentioned herein may be trademarks
  * or trade names of their respective owners. 
@@ -24,6 +24,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 using MapExplorer.Resources;
 
 namespace MapExplorer
@@ -74,7 +75,7 @@ namespace MapExplorer
 
         /// <summary>
         /// We must satisfy Maps API's Terms and Conditions by specifying
-        /// the required Application ID and Authentication Token
+        /// the required Application ID and Authentication Token.
         /// See http://msdn.microsoft.com/en-US/library/windowsphone/develop/jj207033(v=vs.105).aspx#BKMK_appidandtoken
         /// </summary>
         private void MyMap_Loaded(object sender, RoutedEventArgs e)
@@ -155,6 +156,15 @@ namespace MapExplorer
                     GetCurrentCoordinate();
                 }
             }
+        }
+
+        /// <summary>
+        /// Event handler for clicking "download" app bar button.
+        /// </summary>
+        private void Download_Click(object sender, EventArgs e)
+        {
+            MapDownloaderTask mapDownloaderTask = new MapDownloaderTask();
+            mapDownloaderTask.Show();
         }
 
         /// <summary>
@@ -734,6 +744,11 @@ namespace MapExplorer
             appBarLocateMeButton.Text = AppResources.LocateMeMenuButtonText;
             appBarLocateMeButton.Click += new EventHandler(LocateMe_Click);
             ApplicationBar.Buttons.Add(appBarLocateMeButton);
+
+            ApplicationBarIconButton appBarDownloadButton = new ApplicationBarIconButton(new Uri("/Assets/appbar.download.png", UriKind.Relative));
+            appBarDownloadButton.Text = AppResources.DownloadMenuButtonText;
+            appBarDownloadButton.Click += new EventHandler(Download_Click);
+            ApplicationBar.Buttons.Add(appBarDownloadButton);
 
             // Create new menu items with the localized strings from AppResources.
             AppBarColorModeMenuItem = new ApplicationBarMenuItem(AppResources.ColorModeDarkMenuItemText);

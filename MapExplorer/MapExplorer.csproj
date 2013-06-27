@@ -128,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\AlignmentGrid.png" />
+    <Content Include="Assets\appbar.download.png" />
     <Content Include="Assets\appbar.feature.search.rest.png" />
     <Content Include="Assets\appbar.feature.settings.rest.png" />
     <Content Include="Assets\appbar.locate.me.png" />
