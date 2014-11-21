@@ -11,7 +11,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("MapExplorer")]
-[assembly: AssemblyCopyright("Copyright © 2011-2013 Nokia Corporation.")]
+[assembly: AssemblyCopyright("Copyright © 2011-2014 Microsoft Mobile.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

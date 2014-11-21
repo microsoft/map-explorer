@@ -177,13 +177,13 @@
     <value>searching...</value>
   </data>
   <data name="AboutPageCopyrightText" xml:space="preserve">
-    <value>Developed and published by Nokia. All rights reserved.</value>
+    <value>Developed and published by Microsoft Mobile. All rights reserved.</value>
   </data>
   <data name="AboutPageDescriptionText" xml:space="preserve">
-    <value>Map Explorer application is a Nokia Developer example demonstrating the use of the map component of Windows Phone 8.</value>
+    <value>Map Explorer application is an example application demonstrating the use of the map component of Windows Phone 8.</value>
   </data>
   <data name="AboutPageDeveloperUrl" xml:space="preserve">
-    <value>http://projects.developer.nokia.com/mapexplorer</value>
+    <value>https://github.com/Microsoft/map-explorer</value>
   </data>
   <data name="AboutPageLearnMoreText" xml:space="preserve">
     <value>Learn more at </value>
