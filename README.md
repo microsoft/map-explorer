@@ -8,14 +8,14 @@ Map Explorer is a simple Silverlight application which enables the user to
 change properties of the map component to see the effect on shown map.
 
 The example has been developed with Silverlight for Windows Phone devices
-and tested to work on Nokia Lumia devices with Windows Phone 8.
+and tested to work on Lumia devices with Windows Phone 8.
 
 ![Screenshot](doc/screenshots/MapExplorer_screenshot_1.png?raw=true)
 
 This example application is hosted in GitHub:
 https://github.com/Microsoft/map-explorer
 
-For more information on implementation and porting, visit Nokia Lumia
+For more information on implementation and porting, visit Lumia
 Developer's Library:
 http://developer.nokia.com/Resources/Library/Lumia/#!code-examples/map-explorer.html
 
